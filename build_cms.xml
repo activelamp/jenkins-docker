@@ -1,0 +1,67 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+    <actions/>
+    <description></description>
+    <keepDependencies>false</keepDependencies>
+    <properties/>
+    <scm class="hudson.scm.NullSCM"/>
+    <canRoam>true</canRoam>
+    <disabled>false</disabled>
+    <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+    <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+    <triggers/>
+    <concurrentBuild>false</concurrentBuild>
+    <builders>
+        <hudson.tasks.Shell>
+            <command># Copy build files
+                cp -Rf /srv/drupal $WORKSPACE/
+                cp /srv/Makefile $WORKSPACE/
+                cp /srv/Gemfile $WORKSPACE/
+                cp /srv/composer.json $WORKSPACE/</command>
+        </hudson.tasks.Shell>
+        <hudson.tasks.Shell>
+            <command>echo &quot;Installing dependencies&quot;
+                bundle
+                composer install</command>
+        </hudson.tasks.Shell>
+        <hudson.tasks.Shell>
+            <command># Build Drupal
+                if [ -d &quot;docroot&quot; ]; then rm -rf docroot; fi
+                drush make -y drupal/make/prod.make docroot</command>
+        </hudson.tasks.Shell>
+        <hudson.tasks.Shell>
+            <command>echo &quot;Downloading Composer Dependencies...&quot;
+                cd docroot &amp;&amp; php modules/contrib/composer_manager/scripts/init.php &amp;&amp; composer drupal-update
+                cd $WORKSPACE</command>
+        </hudson.tasks.Shell>
+        <hudson.tasks.Shell>
+            <command>echo &quot;Compile SASS&quot;
+                echo &quot;Compile SASS&quot;
+                cd docroot/profiles/its_profile/themes/custom/westwood
+                npm install
+                bower install --allow-root
+                export PATH=$PATH:$WORKSPACE/docroot/profiles/its_profile/themes/custom/westwood/node_modules/.bin
+                gulp build
+                cd $WORKSPACE</command>
+        </hudson.tasks.Shell>
+        <hudson.tasks.Shell>
+            <command>echo &quot;Syncing with Pantheon&quot;
+                if [ ! -d &quot;acquia&quot; ]
+                then
+                git clone itservices@svn-6135.prod.hosting.acquia.com:itservices.git acquia
+                else
+                cd acquia
+                git pull
+                fi
+                cd $WORKSPACE
+                rsync -avzk --safe-links --delete --exclude=&quot;.git*&quot; --exclude=&quot;sites/default/files&quot; docroot/ acquia/docroot/
+                cp /srv/drupal/config/settings.php acquia/docroot/sites/default/
+
+                cd acquia
+                git add . &amp;&amp; git add -u &amp;&amp; git commit -a -m &apos;deploy&apos;
+                git push</command>
+        </hudson.tasks.Shell>
+    </builders>
+    <publishers/>
+    <buildWrappers/>
+</project>
