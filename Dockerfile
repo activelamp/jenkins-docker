@@ -1,19 +1,23 @@
-FROM jenkins:2.60.2
+FROM jenkins:2.60.3
 
 USER root
 
 RUN curl -sL https://deb.nodesource.com/setup_6.x | bash
+
+RUN wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
+RUN sh -c 'echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list'
 
 # Install packages.
 RUN apt-get update
 RUN apt-get install -y \
 	git \
 	curl \
-	php7.0-fpm \
-	php7.0-cli \
-	php7.0-curl \
-	php7.0-mbstring \
-	php7.0-xml \
+	php7.1-common \
+	php7.1-fpm \
+	php7.1-cli \
+	php7.1-curl \
+	php7.1-mbstring \
+	php7.1-xml \
 	ruby \
 	ruby-dev \
 	rubygems-integration \
@@ -37,7 +41,7 @@ RUN gem install bundler
 RUN chown -R jenkins /var/lib/gems /usr/local/bin
 
 # Install Bower
-RUN npm install -g bower
+RUN npm install -g bower gulp gulp-cli yarn
 
 # Install n
 RUN npm install -g n
