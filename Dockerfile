@@ -1,4 +1,4 @@
-FROM jenkins:2.60.3
+FROM jenkins/jenkins:lts 
 
 USER root
 
@@ -18,6 +18,7 @@ RUN apt-get install -y \
 	php7.1-curl \
 	php7.1-mbstring \
 	php7.1-xml \
+	php7.1-gd \
 	ruby \
 	ruby-dev \
 	rubygems-integration \
