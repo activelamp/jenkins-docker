@@ -22,13 +22,13 @@ RUN apt-get update
 RUN curl -sL https://deb.nodesource.com/setup_6.x | bash
 
 RUN apt-get install -y \
-	php7.1-common \
-	php7.1-fpm \
-	php7.1-cli \
-	php7.1-curl \
-	php7.1-mbstring \
-	php7.1-xml \
-	php7.1-gd \
+	php7.3-common \
+	php7.3-fpm \
+	php7.3-cli \
+	php7.3-curl \
+	php7.3-mbstring \
+	php7.3-xml \
+	php7.3-gd \
 	ruby \
 	ruby-dev \
 	rubygems-integration \
